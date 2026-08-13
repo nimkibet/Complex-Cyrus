@@ -35,7 +35,7 @@ export default function Navbar() {
           {/* Logo */}
           <a href="#home" className="flex items-center gap-3 group">
             <img
-              src="/logo.jpeg"
+              src="/logo.png"
               alt="Complex Cyrus Electrical Solution Logo"
               className="w-10 h-10 lg:w-12 lg:h-12 object-contain rounded-xl shadow-lg group-hover:shadow-blue-500/30 transition-shadow"
             />

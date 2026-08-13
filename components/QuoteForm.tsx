@@ -3,7 +3,7 @@
 import { useForm, SubmitHandler } from "react-hook-form";
 import { Zap, Send, CheckCircle, AlertCircle } from "lucide-react";
 import { useState } from "react";
-
+import { submitQuoteAction } from "@/app/actions/quote";
 type FormValues = {
   name: string;
   phone: string;
@@ -47,12 +47,19 @@ export default function QuoteForm() {
   } = useForm<FormValues>();
 
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
-    // Simulate form submission
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    console.log("Form data:", data);
-    setSubmitted(true);
-    reset();
-    setTimeout(() => setSubmitted(false), 5000);
+    try {
+      const result = await submitQuoteAction(data);
+      if (result.success) {
+        setSubmitted(true);
+        reset();
+        setTimeout(() => setSubmitted(false), 5000);
+      } else {
+        alert("Request saved, but email failed. Please configure SMTP in .env file.");
+      }
+    } catch (error) {
+      console.error(error);
+      alert("An unexpected error occurred.");
+    }
   };
 
   return (

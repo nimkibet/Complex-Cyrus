@@ -50,7 +50,7 @@ export default function Footer() {
             {/* Logo */}
             <div className="flex items-center gap-3 mb-6">
               <img
-                src="/logo.jpeg"
+                src="/logo.png"
                 alt="Complex Cyrus Electrical Solution Logo"
                 className="w-12 h-12 object-contain rounded-xl shadow-lg"
               />

@@ -36,7 +36,7 @@ export default function Hero() {
         {/* Logo Badge */}
         <div className="inline-flex items-center justify-center mb-8">
           <img
-            src="/logo.jpeg"
+            src="/logo.png"
             alt="Complex Cyrus Electrical Solution Logo"
             className="w-24 h-24 sm:w-28 sm:h-28 object-contain rounded-2xl shadow-2xl"
           />
