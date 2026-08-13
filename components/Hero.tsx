@@ -76,7 +76,7 @@ export default function Hero() {
           <a
             id="hero-quote-cta"
             href="#quote"
-            className="btn-pulse inline-flex items-center gap-3 bg-yellow-400 hover:bg-yellow-500 text-blue-900 font-black text-base sm:text-lg px-8 py-4 rounded-xl shadow-2xl shadow-yellow-500/40 hover:shadow-yellow-500/60 transition-all hover:-translate-y-1 group"
+            className="btn-pulse inline-flex items-center gap-3 bg-yellow-400 hover:bg-yellow-500 text-blue-900 font-black text-base sm:text-lg px-8 py-4 rounded-xl shadow-2xl shadow-yellow-500/40 hover:shadow-yellow-500/60 transition-all duration-200 ease-out hover:-translate-y-1 active:scale-95 group"
           >
             <Zap className="w-5 h-5 fill-blue-900" />
             Get a Quote
@@ -85,7 +85,7 @@ export default function Hero() {
           <a
             id="hero-call-cta"
             href="tel:+254725618445"
-            className="inline-flex items-center gap-3 border-2 border-white/60 hover:border-white text-white font-bold text-base sm:text-lg px-8 py-4 rounded-xl backdrop-blur-sm hover:bg-white/10 transition-all hover:-translate-y-1"
+            className="inline-flex items-center gap-3 border-2 border-white/60 hover:border-white text-white font-bold text-base sm:text-lg px-8 py-4 rounded-xl backdrop-blur-sm hover:bg-white/10 transition-all duration-200 ease-out hover:-translate-y-1 active:scale-95"
           >
             <Phone className="w-5 h-5" />
             Call Now: +254 725 618 445

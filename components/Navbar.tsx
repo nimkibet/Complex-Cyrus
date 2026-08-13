@@ -68,13 +68,13 @@ export default function Navbar() {
           <div className="flex items-center gap-3">
             <a
               href="#quote"
-              className="hidden sm:inline-flex items-center gap-2 bg-yellow-400 hover:bg-yellow-500 text-blue-900 font-bold text-sm px-4 py-2 rounded-lg transition-all hover:shadow-lg hover:shadow-yellow-400/30"
+              className="hidden sm:inline-flex items-center gap-2 bg-yellow-400 hover:bg-yellow-500 text-blue-900 font-bold text-sm px-4 py-2 rounded-lg transition-all duration-200 ease-out hover:shadow-lg hover:shadow-yellow-400/30 active:scale-95"
             >
               Get a Quote
             </a>
             <a
               href="tel:+254725618445"
-              className={`hidden md:flex items-center gap-2 border-2 font-semibold text-sm px-4 py-2 rounded-lg transition-all ${
+              className={`hidden md:flex items-center gap-2 border-2 font-semibold text-sm px-4 py-2 rounded-lg transition-all duration-200 ease-out active:scale-95 ${
                 scrolled
                   ? "border-blue-800 text-blue-800 hover:bg-blue-800 hover:text-white"
                   : "border-white/60 text-white hover:border-white hover:bg-white/10"
@@ -114,7 +114,7 @@ export default function Navbar() {
               <a
                 href="#quote"
                 onClick={() => setMenuOpen(false)}
-                className="bg-yellow-400 hover:bg-yellow-500 text-blue-900 font-bold text-center py-3 rounded-lg transition-colors"
+                className="bg-yellow-400 hover:bg-yellow-500 text-blue-900 font-bold text-center py-3 rounded-lg transition-all duration-200 ease-out active:scale-95"
               >
                 Get a Quote
               </a>

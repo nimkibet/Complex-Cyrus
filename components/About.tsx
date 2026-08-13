@@ -105,7 +105,7 @@ export default function About() {
               return (
                 <div
                   key={pillar.title}
-                  className="hover-lift bg-white rounded-2xl p-6 shadow-sm border border-blue-100 group"
+                  className="hover-lift bg-white rounded-2xl p-6 shadow-sm border border-blue-100 group transition-all duration-200 ease-out active:scale-[0.98]"
                 >
                   <div className="w-12 h-12 bg-blue-900 group-hover:bg-yellow-400 rounded-xl flex items-center justify-center mb-4 transition-colors duration-300">
                     <Icon className="w-6 h-6 text-white group-hover:text-blue-900 transition-colors duration-300" />
