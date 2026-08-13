@@ -14,7 +14,7 @@ export const metadata: Metadata = {
   description:
     "Complex Cyrus Electrical Solution is a registered Kenyan electrical engineering company led by Engineer Cyrus Maina Wachira. We offer domestic, commercial, industrial electrical installation, solar PV, CCTV, electric fence, and 24/7 emergency services.",
   keywords:
-    "electrical services Kenya, solar installation Kenya, CCTV installation, electric fence Kenya, Kiambu electrical contractor, Thika electrician",
+    "Complex Cyrus, Cyrus Electricals, Complex Cyrus Electrical Solution, Cyrus Electrical, Complex Cyrus Kenya, Cyrus Maina Wachira electrician, electrical services Kenya, solar installation Kenya, CCTV installation, electric fence Kenya, Kiambu electrical contractor, Thika electrician",
   openGraph: {
     title: "Complex Cyrus Electrical Solution",
     description: "Powering Safety. Delivering Excellence.",
