@@ -64,6 +64,7 @@ export default function Hero() {
           Powering Safety. Delivering Excellence.
         </p>
         <p className="text-base sm:text-lg text-white/70 max-w-2xl mx-auto mb-10">
+          The top-rated Kiambu electrical contractor & Thika electrician. <br className="hidden sm:block" />
           Professional Solutions &bull; Quality Workmanship &bull; Reliable Service
         </p>
 

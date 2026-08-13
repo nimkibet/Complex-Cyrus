@@ -47,16 +47,16 @@ export default function About() {
           {/* Text Content */}
           <div>
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-blue-900 leading-tight mb-6">
-              Kenya&apos;s Trusted
-              <span className="text-yellow-500"> Electrical </span>
-              Engineering Partner
+              Complex Cyrus Electricals — Kenya&apos;s Trusted
+              <span className="text-yellow-500"> Engineering </span>
+              Partner
             </h2>
 
             <div className="space-y-4 text-gray-600 leading-relaxed">
               <p className="text-lg">
-                <strong className="text-blue-900">Complex Cyrus Electrical Solution</strong> is a fully
+                <strong className="text-blue-900">Complex Cyrus Electrical Solution</strong> (also known as <strong>Cyrus Electricals</strong>) is a top-rated, fully
                 registered electrical engineering company based in Kiambu County, Kenya. We
-                specialize in delivering safe, high-quality, and compliant electrical solutions for
+                specialize in delivering safe, high-quality, and compliant electrical services, solar installations, and CCTV systems for
                 residential, commercial, and industrial clients across Kenya.
               </p>
               <p>
