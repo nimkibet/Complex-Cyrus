@@ -1,7 +1,7 @@
 "use server";
 
 import { PrismaClient } from "@prisma/client";
-import sgMail from "@sendgrid/mail";
+import { Resend } from "resend";
 import PDFDocument from "pdfkit";
 
 // Use a global variable to avoid instantiating multiple Prisma clients in dev
@@ -9,10 +9,7 @@ const globalForPrisma = global as unknown as { prisma: PrismaClient };
 const prisma = globalForPrisma.prisma || new PrismaClient();
 if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
 
-// Initialize SendGrid
-if (process.env.SENDGRID_API_KEY) {
-  sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-}
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 interface QuoteData {
   name: string;
@@ -102,40 +99,40 @@ export async function submitQuoteAction(data: QuoteData) {
 
     // 2. Generate PDF
     const pdfBuffer = await generateQuotePDF(data, quote.id);
-    const pdfBase64 = pdfBuffer.toString("base64");
 
-    // 3. Prepare Email sending via SendGrid
+    // 3. Prepare Email sending via Resend
     const adminEmail = process.env.ADMIN_EMAIL || "admin@complexcyrus.com";
-    const fromEmail = process.env.SENDGRID_FROM_EMAIL || "your-verified-email@gmail.com"; 
+    const fromEmail = process.env.RESEND_FROM_EMAIL || "quotes@complexcyrus.com"; // Must match your verified domain in Resend
 
     const attachmentName = `Quotation-${quote.id.slice(-6).toUpperCase()}.pdf`;
-    const attachment = {
-      content: pdfBase64,
-      filename: attachmentName,
-      type: "application/pdf",
-      disposition: "attachment",
-    };
 
-    // 4. Send Email to Admin using SendGrid
-    const adminMsg = {
+    // 4. Send Email to Admin using Resend
+    await resend.emails.send({
+      from: `Complex Cyrus System <${fromEmail}>`,
       to: adminEmail,
-      from: fromEmail,
       subject: `New Quotation Request - ${data.name}`,
       text: `You have received a new quotation request for ${data.service} from ${data.name}. Please see the attached PDF for details.`,
-      attachments: [attachment],
-    };
+      attachments: [
+        {
+          filename: attachmentName,
+          content: pdfBuffer,
+        },
+      ],
+    });
 
-    // 5. Send Email to Client using SendGrid
-    const clientMsg = {
+    // 5. Send Email to Client using Resend
+    await resend.emails.send({
+      from: `Complex Cyrus <${fromEmail}>`,
       to: data.email,
-      from: fromEmail,
       subject: `Your Quotation Request - Complex Cyrus Electrical Solution`,
       text: `Hello ${data.name},\n\nThank you for requesting a quotation for ${data.service}. We have received your request and attached a summary PDF for your records.\n\nOur team will review this and get back to you shortly with detailed pricing.\n\nBest Regards,\nComplex Cyrus Electrical Solution`,
-      attachments: [attachment],
-    };
-
-    // Send both emails
-    await sgMail.send([adminMsg, clientMsg]);
+      attachments: [
+        {
+          filename: attachmentName,
+          content: pdfBuffer,
+        },
+      ],
+    });
 
     return { success: true };
   } catch (error) {
