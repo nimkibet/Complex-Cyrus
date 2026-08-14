@@ -33,19 +33,19 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 lg:h-20">
           {/* Logo */}
-          <a href="#home" className="flex items-center gap-3 group">
+          <a href="#home" className="flex items-center gap-2 sm:gap-3 group z-50 relative">
             <img
               src="/logo.png"
               alt="Complex Cyrus Electrical Solution Logo"
-              className="w-10 h-10 lg:w-12 lg:h-12 object-contain rounded-xl shadow-lg group-hover:shadow-blue-500/30 transition-shadow"
+              className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 object-contain rounded-xl shadow-lg group-hover:shadow-blue-500/30 transition-shadow"
             />
-            <div className="hidden sm:block">
-              <p className={`font-bold text-sm leading-tight transition-colors ${scrolled ? "text-blue-900" : "text-white"}`}>
+            <div className="flex flex-col justify-center">
+              <h1 className={`font-black text-[11px] sm:text-sm leading-none transition-colors ${scrolled ? "text-blue-950" : "text-white"}`}>
                 COMPLEX CYRUS
-              </p>
-              <p className={`text-xs font-medium transition-colors ${scrolled ? "text-yellow-600" : "text-yellow-400"}`}>
+              </h1>
+              <span className={`text-[8px] sm:text-xs font-bold tracking-wider transition-colors mt-0.5 ${scrolled ? "text-yellow-600" : "text-yellow-400"}`}>
                 ELECTRICAL SOLUTION
-              </p>
+              </span>
             </div>
           </a>
 
