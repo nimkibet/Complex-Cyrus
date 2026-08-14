@@ -28,7 +28,7 @@ export default async function Home() {
         <ProjectsGallery />
         <WhyChooseUs />
         <Testimonials />
-        <QuoteForm />
+        <QuoteForm serviceNames={dbServices.map(s => s.name)} />
         <ContactInfo />
       </main>
       <Footer />
