@@ -178,14 +178,32 @@ async function generateQuotePDF(data: QuoteData, quoteNumber: string, pricing: S
       doc.text("• Payment terms to be agreed upon before commencement of work.", 40, y + 45);
       doc.text("• We thank you for the opportunity to submit this quotation and look forward to working with you.", 40, y + 65, { width: 250 });
 
-      // Signature
-      doc.font("Helvetica-Bold").fillColor(orange).text("Engineer Cyrus Maina Wachira", 330, y + 45);
-      doc.font("Helvetica").fillColor(blue).text("Electrical Wiring Expert\nProprietor", 330, y + 55);
+      // ─── Signature ───
+      const signatureFont = path.join(process.cwd(), "public", "fonts", "GreatVibes-Regular.ttf");
+      if (fs.existsSync(signatureFont)) {
+        doc.font(signatureFont).fontSize(28).fillColor(blue).text("Cyrus Maina", 310, y + 20);
+      } else {
+        doc.font("Helvetica-Oblique").fontSize(18).fillColor(blue).text("Cyrus Maina", 310, y + 30);
+      }
+      
+      // Signature underline
+      doc.moveTo(310, y + 48).lineTo(430, y + 48).strokeColor(blue).lineWidth(0.5).stroke();
 
-      // Stamp Box
-      doc.rect(430, y - 10, 125, 50).strokeColor(blue).lineWidth(1).stroke();
-      doc.fontSize(8).font("Helvetica-Bold").fillColor(blue).text("COMPLEX CYRUS\nELECTRICAL SOLUTION\nP.O. BOX 65-01000, THIKA\nKIAMBU, KENYA", 435, y - 5, { align: "center" });
-      doc.fontSize(7).fillColor(orange).text("COMPANY STAMP", 435, y + 45, { align: "center" });
+      doc.font("Helvetica-Bold").fontSize(8).fillColor(orange).text("Engineer Cyrus Maina Wachira", 310, y + 55);
+      doc.font("Helvetica").fillColor(blue).text("Electrical Wiring Expert\nProprietor", 310, y + 65);
+
+      // ─── Circular Stamp ───
+      const cx = 500;
+      const cy = y + 45;
+      
+      doc.circle(cx, cy, 35).lineWidth(2).strokeColor(blue).stroke();
+      doc.circle(cx, cy, 32).lineWidth(1).strokeColor(blue).stroke();
+      
+      doc.fontSize(6).font("Helvetica-Bold").fillColor(blue);
+      doc.text("COMPLEX CYRUS", cx - 25, cy - 15, { width: 50, align: "center" });
+      doc.text("ELECTRICAL", cx - 25, cy - 5, { width: 50, align: "center" });
+      doc.text("SOLUTION", cx - 25, cy + 3, { width: 50, align: "center" });
+      doc.fontSize(7).fillColor(orange).text("OFFICIAL SEAL", cx - 30, cy + 15, { width: 60, align: "center" });
 
       // ─── Bottom Orange Bar ───
       doc.rect(0, 800, 595, 42).fill(orange);
