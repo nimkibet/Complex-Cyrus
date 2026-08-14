@@ -175,18 +175,12 @@ async function generateQuotePDF(data: QuoteData, quoteNumber: string, pricing: S
       // Column 1: Prepared By
       doc.fontSize(9).font("Helvetica-Bold").fillColor(blue).text("Prepared By:", 40, y);
       
-      const sigPath = path.join(process.cwd(), "public", "clean_signature.png");
-      if (fs.existsSync(sigPath)) {
-        // Use the cleanly extracted signature ink without the black bars
-        doc.image(sigPath, 40, y, { width: 100 });
-      } else {
-        const signatureFont = path.join(process.cwd(), "public", "fonts", "GreatVibes-Regular.ttf");
-        if (fs.existsSync(signatureFont)) {
-          doc.font(signatureFont).fontSize(28).fillColor(blue).text("Cyrus Maina", 40, y + 10);
-        } else {
-          doc.font("Helvetica-Oblique").fontSize(18).fillColor(blue).text("Cyrus Maina", 40, y + 20);
-        }
-      }
+      // Use a mathematical SVG path to draw a professional signature (a stylized "C" followed by continuous loops)
+      const sy = y + 15;
+      const sx = 45;
+      doc.path(`M ${sx + 15} ${sy + 5} C ${sx - 10} ${sy - 15}, ${sx - 20} ${sy + 15}, ${sx} ${sy + 25} C ${sx + 15} ${sy + 35}, ${sx + 35} ${sy + 20}, ${sx + 25} ${sy + 10}`).strokeColor(blue).lineWidth(1.5).stroke();
+      doc.path(`M ${sx + 25} ${sy + 10} Q ${sx + 40} ${sy - 10}, ${sx + 45} ${sy + 20} T ${sx + 65} ${sy} T ${sx + 85} ${sy + 20} T ${sx + 110} ${sy - 5} T ${sx + 130} ${sy + 15}`).stroke();
+      doc.path(`M ${sx} ${sy + 35} Q ${sx + 60} ${sy + 45}, ${sx + 140} ${sy + 25}`).stroke();
       
       doc.moveTo(40, y + 38).lineTo(160, y + 38).lineWidth(0.5).strokeColor(blue).stroke();
       
