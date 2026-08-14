@@ -278,7 +278,7 @@ export default function Services() {
                 className="hover-lift bg-white rounded-2xl border border-gray-100 shadow-sm hover:border-blue-200 hover:shadow-xl group relative overflow-hidden flex flex-col transition-all duration-300"
               >
                 {/* Image Header */}
-                <div className="relative h-48 w-full overflow-hidden bg-gray-100">
+                <div className="relative h-56 w-full overflow-hidden bg-gray-100">
                   <img
                     src={service.image}
                     alt={service.title}
