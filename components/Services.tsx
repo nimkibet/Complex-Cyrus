@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import {
   Home,
   Building2,
@@ -25,6 +28,15 @@ import {
   ServerCrash,
   HardHat,
 } from "lucide-react";
+import ServiceModal from "./ServiceModal";
+
+type ServiceItem = {
+  icon: React.ComponentType<{ className?: string }>;
+  title: string;
+  image: string;
+  description: string;
+  category: string;
+};
 
 const services = [
   {
@@ -241,6 +253,8 @@ const categoryColors: Record<string, string> = {
 };
 
 export default function Services() {
+  const [selectedService, setSelectedService] = useState<ServiceItem | null>(null);
+
   return (
     <section id="services" className="py-20 lg:py-28 bg-white relative overflow-hidden">
       {/* Background decoration */}
@@ -275,7 +289,8 @@ export default function Services() {
             return (
               <div
                 key={service.title}
-                className="hover-lift bg-white rounded-2xl border border-gray-100 shadow-sm hover:border-blue-200 hover:shadow-xl group relative overflow-hidden flex flex-col transition-all duration-300"
+                onClick={() => setSelectedService(service as ServiceItem)}
+                className="hover-lift bg-white rounded-2xl border border-gray-100 shadow-sm hover:border-blue-200 hover:shadow-xl group relative overflow-hidden flex flex-col transition-all duration-300 cursor-pointer active:scale-[0.98]"
               >
                 {/* Image Header */}
                 <div className="relative h-56 w-full overflow-hidden bg-gray-100">
@@ -326,6 +341,23 @@ export default function Services() {
           </a>
         </div>
       </div>
+
+      <ServiceModal
+        service={selectedService}
+        onClose={() => setSelectedService(null)}
+        onGetQuote={(serviceName) => {
+          // Find the select element in the quote form and update it
+          const selectEl = document.querySelector('select[name="service"]') as HTMLSelectElement;
+          if (selectEl) {
+            selectEl.value = serviceName;
+          }
+          // Scroll to form
+          const quoteSection = document.getElementById("quote");
+          if (quoteSection) {
+            quoteSection.scrollIntoView({ behavior: "smooth" });
+          }
+        }}
+      />
     </section>
   );
 }
