@@ -32,97 +32,167 @@ import PDFDocument from "pdfkit";
 async function generateQuotePDF(data: QuoteData, quoteNumber: string, pricing: ServicePricing): Promise<Buffer> {
   return new Promise((resolve, reject) => {
     try {
-      const doc = new PDFDocument({ margin: 50, size: 'A4' });
+      const doc = new PDFDocument({ margin: 0, size: 'A4' });
       const chunks: Buffer[] = [];
       doc.on("data", (chunk) => chunks.push(chunk));
       doc.on("end", () => resolve(Buffer.concat(chunks)));
 
-      // Branding Header
-      doc.fontSize(22).fillColor("#1a2e5a").text("COMPLEX CYRUS ELECTRICAL SOLUTION", { align: "center" });
-      doc.fontSize(10).fillColor("#E8600A").text("POWERING SAFETY. DELIVERING EXCELLENCE.", { align: "center" });
-      doc.moveDown(2);
+      // Colors
+      const blue = "#1a2e5a";
+      const orange = "#E8600A";
+      const lightGrey = "#f4f4f4";
 
-      // Document Title
-      doc.fontSize(18).fillColor("#1a2e5a").text("QUOTATION", { underline: true });
-      doc.moveDown(0.5);
+      // ─── Top Right Orange Triangle ───
+      doc.polygon([450, 0], [595, 0], [595, 145]).fill(orange);
 
-      // Meta Info
-      doc.fontSize(10).fillColor("#333");
-      doc.text(`Quote Reference: ${quoteNumber}`);
-      doc.text(`Date: ${new Date().toLocaleDateString()}`);
-      doc.text(`Valid Until: ${new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString()}`);
-      doc.moveDown();
-
-      // Client Info
-      doc.fillColor("#E8600A").text("CLIENT DETAILS");
-      doc.fillColor("#333");
-      doc.text(`Name: ${data.name}`);
-      doc.text(`Phone: ${data.phone}`);
-      doc.text(`Email: ${data.email}`);
-      doc.text(`Location: ${data.location}`);
-      doc.text(`Project: ${data.service}`);
-      if (data.message) {
-        doc.text(`Details: ${data.message}`);
+      // ─── Header & Logo ───
+      const logoPath = path.join(process.cwd(), "public", "logo.png");
+      if (fs.existsSync(logoPath)) {
+        doc.image(logoPath, 40, 30, { width: 80 });
       }
-      doc.moveDown(2);
-
-      // Pricing Breakdown
-      doc.fontSize(14).fillColor("#1a2e5a").text("ESTIMATED BREAKDOWN", { underline: true });
-      doc.moveDown();
-
-      let y = doc.y;
-      doc.fontSize(10).fillColor("#000");
-
-      const totalMaterials = pricing.materials.reduce((sum, item) => sum + item.qty * item.unitPrice, 0);
-      const grandTotal = totalMaterials + pricing.labourCost;
-
-      // Header row
-      doc.font("Helvetica-Bold");
-      doc.text("Description", 50, y);
-      doc.text("Qty", 350, y, { width: 50, align: "right" });
-      doc.text("Unit Price", 400, y, { width: 70, align: "right" });
-      doc.text("Total", 470, y, { width: 70, align: "right" });
-      y += 15;
       
-      doc.moveTo(50, y).lineTo(540, y).strokeColor("#ccc").stroke();
-      y += 10;
-      doc.font("Helvetica");
+      doc.fontSize(24).font("Helvetica-Bold").fillColor(blue).text("COMPLEX CYRUS", 140, 45);
+      doc.fontSize(16).font("Helvetica-Bold").fillColor(orange).text("ELECTRICAL SOLUTION", 140, 70);
+      
+      doc.moveTo(140, 90).lineTo(450, 90).strokeColor(blue).lineWidth(1).stroke();
+      doc.fontSize(8).font("Helvetica-Bold").fillColor(blue).text("POWERING SAFETY. DELIVERING EXCELLENCE.", 140, 95, { characterSpacing: 1 });
 
-      // Materials
-      pricing.materials.forEach((m) => {
-        if (y > 700) { doc.addPage(); y = 50; }
-        doc.text(m.description, 50, y, { width: 290 });
-        doc.text(`${m.qty} ${m.unit}`, 350, y, { width: 50, align: "right" });
-        doc.text(m.unitPrice.toLocaleString(), 400, y, { width: 70, align: "right" });
-        doc.text((m.qty * m.unitPrice).toLocaleString(), 470, y, { width: 70, align: "right" });
-        y += 15;
-      });
+      // ─── Contact Info Bar ───
+      doc.moveTo(40, 130).lineTo(555, 130).strokeColor("#ddd").lineWidth(1).stroke();
+      doc.fontSize(8).font("Helvetica").fillColor(blue);
+      // Address
+      doc.font("Helvetica-Bold").fillColor(orange).text("ADDRESS:", 40, 140);
+      doc.font("Helvetica").fillColor(blue).text("Witeithie House,\nKenyatta Avenue,\nKiambu, Thika West District\nP.O. Box 65-01000, Thika, Kenya", 40, 150);
+      // Phone
+      doc.font("Helvetica-Bold").fillColor(orange).text("PHONE:", 200, 140);
+      doc.font("Helvetica").fillColor(blue).text("+254 725 618 445", 200, 150);
+      // Email
+      doc.font("Helvetica-Bold").fillColor(orange).text("EMAIL:", 330, 140);
+      doc.font("Helvetica").fillColor(blue).text("complexcyrus@gmail.com", 330, 150);
+      // Reg
+      doc.font("Helvetica-Bold").fillColor(orange).text("REGISTRATION NO.:", 450, 140);
+      doc.font("Helvetica-Bold").fillColor(blue).text("BN-WL5PEMMP", 450, 150);
+      
+      doc.moveTo(40, 200).lineTo(555, 200).strokeColor(blue).lineWidth(2).stroke();
 
-      // Labour
-      if (y > 700) { doc.addPage(); y = 50; }
-      y += 10;
-      doc.text("Labour & Installation Cost", 50, y, { width: 290 });
-      doc.text("1 Job", 350, y, { width: 50, align: "right" });
-      doc.text(pricing.labourCost.toLocaleString(), 400, y, { width: 70, align: "right" });
-      doc.text(pricing.labourCost.toLocaleString(), 470, y, { width: 70, align: "right" });
+      // ─── Title & Client Info ───
+      doc.fontSize(22).font("Helvetica-Bold").fillColor(blue).text("QUOTATION", 40, 215);
+      
+      doc.fontSize(9).font("Helvetica-Bold").fillColor(orange).text("CLIENT NAME:", 330, 215);
+      doc.font("Helvetica").fillColor(blue).text(data.name, 410, 215);
+      
+      doc.font("Helvetica-Bold").fillColor(orange).text("PROJECT:", 330, 230);
+      doc.font("Helvetica").fillColor(blue).text(data.service, 410, 230);
+      
+      doc.font("Helvetica-Bold").fillColor(orange).text("DATE:", 330, 245);
+      doc.font("Helvetica").fillColor(blue).text(new Date().toLocaleDateString(), 410, 245);
+
+      // ─── Table Settings ───
+      let y = 270;
+      
+      const drawRowLines = (currentY: number) => {
+        doc.moveTo(40, currentY).lineTo(555, currentY).strokeColor("#ccc").lineWidth(1).stroke();
+        doc.moveTo(40, y).lineTo(40, currentY).stroke(); // left border
+        doc.moveTo(70, y).lineTo(70, currentY).stroke(); // col 1
+        doc.moveTo(270, y).lineTo(270, currentY).stroke(); // col 2
+        doc.moveTo(350, y).lineTo(350, currentY).stroke(); // col 3
+        doc.moveTo(450, y).lineTo(450, currentY).stroke(); // col 4
+        doc.moveTo(555, y).lineTo(555, currentY).stroke(); // right border
+      };
+
+      // ─── Materials Header ───
+      doc.rect(40, y, 515, 20).fill(blue);
+      doc.fontSize(10).font("Helvetica-Bold").fillColor("#fff").text("MATERIALS", 45, y + 5);
       y += 20;
 
-      // Totals
-      doc.moveTo(350, y).lineTo(540, y).strokeColor("#1a2e5a").lineWidth(2).stroke();
-      y += 10;
+      doc.rect(40, y, 515, 20).fill(orange);
+      doc.fontSize(9).fillColor("#fff");
+      doc.text("No.", 40, y + 5, { width: 30, align: "center" });
+      doc.text("DESCRIPTION", 75, y + 5);
+      doc.text("QTY", 270, y + 5, { width: 80, align: "center" });
+      doc.text("UNIT PRICE (KSH)", 350, y + 5, { width: 100, align: "center" });
+      doc.text("TOTAL (KSH)", 450, y + 5, { width: 105, align: "center" });
+      y += 20;
+
+      // ─── Materials Rows ───
+      let totalMaterials = 0;
+      doc.fontSize(9).font("Helvetica").fillColor(blue);
       
-      doc.font("Helvetica-Bold");
-      doc.text("TOTAL MATERIALS:", 300, y, { width: 150, align: "right" });
-      doc.text(`KSH ${totalMaterials.toLocaleString()}`, 470, y, { width: 70, align: "right" });
+      pricing.materials.forEach((m, i) => {
+        if (y > 700) { doc.addPage(); y = 50; }
+        const rowHeight = 20;
+        doc.text((i + 1).toString(), 40, y + 5, { width: 30, align: "center" });
+        doc.text(m.description, 75, y + 5, { width: 190 });
+        doc.text(`${m.qty} ${m.unit || ""}`, 270, y + 5, { width: 80, align: "center" });
+        doc.text(m.unitPrice.toLocaleString(), 350, y + 5, { width: 100, align: "center" });
+        
+        const rowTotal = m.qty * m.unitPrice;
+        totalMaterials += rowTotal;
+        doc.text(rowTotal.toLocaleString(), 450, y + 5, { width: 105, align: "center" });
+        
+        y += rowHeight;
+        drawRowLines(y);
+      });
+      
+      // Blank rows to fill space
+      while (y < 450) {
+        y += 20;
+        drawRowLines(y);
+      }
+
+      // ─── Totals ───
+      doc.rect(270, y, 285, 20).fill(lightGrey);
+      doc.font("Helvetica-Bold").fillColor(blue).text("TOTAL MATERIALS COST", 275, y + 5, { width: 170, align: "right" });
+      doc.fillColor(orange).text(`KSH ${totalMaterials.toLocaleString()}`, 450, y + 5, { width: 105, align: "center" });
+      y += 25;
+
+      // ─── Labour Cost ───
+      doc.rect(40, y, 515, 20).fill(blue);
+      doc.fontSize(10).fillColor("#fff").text("LABOUR COST", 45, y + 5);
+      doc.fillColor(orange).text(`KSH ${pricing.labourCost.toLocaleString()}`, 450, y + 5, { width: 105, align: "center" });
+      y += 25;
+
+      // ─── Summary Totals ───
+      doc.font("Helvetica-Bold").fontSize(9);
+      doc.fillColor(blue).text("TOTAL MATERIALS COST", 300, y + 5, { width: 140, align: "right" });
+      doc.text(`KSH ${totalMaterials.toLocaleString()}`, 450, y + 5, { width: 105, align: "center" });
+      y += 15;
+      
+      doc.fillColor(blue).text("TOTAL LABOUR COST", 300, y + 5, { width: 140, align: "right" });
+      doc.text(`KSH ${pricing.labourCost.toLocaleString()}`, 450, y + 5, { width: 105, align: "center" });
       y += 15;
 
-      doc.text("TOTAL LABOUR:", 300, y, { width: 150, align: "right" });
-      doc.text(`KSH ${pricing.labourCost.toLocaleString()}`, 470, y, { width: 70, align: "right" });
-      y += 15;
+      const grandTotal = totalMaterials + pricing.labourCost;
+      doc.rect(300, y, 255, 25).fill(blue);
+      doc.fillColor("#fff").fontSize(11).text("GRAND TOTAL", 310, y + 7);
+      doc.fillColor(orange).text(`KSH ${grandTotal.toLocaleString()}`, 420, y + 7, { width: 130, align: "center" });
+      y += 35;
 
-      doc.fontSize(12).fillColor("#E8600A");
-      doc.text("GRAND TOTAL:", 300, y, { width: 150, align: "right" });
-      doc.text(`KSH ${grandTotal.toLocaleString()}`, 460, y, { width: 80, align: "right" });
+      // ─── Terms & Footer ───
+      if (y > 680) { doc.addPage(); y = 50; }
+      
+      doc.fontSize(8).font("Helvetica-Bold").fillColor(orange).text("TERMS & CONDITIONS", 40, y);
+      doc.font("Helvetica").fillColor(blue);
+      doc.text("• This quotation is valid for 30 days from the date above.", 40, y + 15);
+      doc.text("• Prices are in Kenya Shillings and inclusive of all costs except VAT if applicable.", 40, y + 25);
+      doc.text("• Payment terms to be agreed upon before commencement of work.", 40, y + 45);
+      doc.text("• We thank you for the opportunity to submit this quotation and look forward to working with you.", 40, y + 65, { width: 250 });
+
+      // Signature
+      doc.font("Helvetica-Bold").fillColor(orange).text("Engineer Cyrus Maina Wachira", 330, y + 45);
+      doc.font("Helvetica").fillColor(blue).text("Electrical Wiring Expert\nProprietor", 330, y + 55);
+
+      // Stamp Box
+      doc.rect(430, y - 10, 125, 50).strokeColor(blue).lineWidth(1).stroke();
+      doc.fontSize(8).font("Helvetica-Bold").fillColor(blue).text("COMPLEX CYRUS\nELECTRICAL SOLUTION\nP.O. BOX 65-01000, THIKA\nKIAMBU, KENYA", 435, y - 5, { align: "center" });
+      doc.fontSize(7).fillColor(orange).text("COMPANY STAMP", 435, y + 45, { align: "center" });
+
+      // ─── Bottom Orange Bar ───
+      doc.rect(0, 800, 595, 42).fill(orange);
+      doc.fontSize(10).font("Helvetica").fillColor("#fff");
+      doc.text("Proudly Serving Kenya", 40, 815);
+      doc.text("Quality. Safety. Reliability.", 0, 815, { align: "center", width: 595 });
+      doc.text("www.complexcyruselectrical.co.ke", 0, 815, { align: "right", width: 555 });
 
       doc.end();
     } catch (err) {
