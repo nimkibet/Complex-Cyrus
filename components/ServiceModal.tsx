@@ -11,6 +11,7 @@ interface ServiceModalProps {
     image: string;
     category: string;
   } | null;
+  dbServices?: any[];
   onClose: () => void;
   onGetQuote: (serviceName: string) => void;
 }
@@ -258,21 +259,9 @@ const serviceDetails: Record<string, { overview: string; includes: string[] }> =
   },
 };
 
-export default function ServiceModal({ service, onClose, onGetQuote }: ServiceModalProps) {
+export default function ServiceModal({ service, dbServices, onClose, onGetQuote }: ServiceModalProps) {
   const overlayRef = useRef<HTMLDivElement>(null);
 
-  const pricing = service
-    ? servicePricingDB[service.title] || defaultPricing
-    : null;
-
-  const totalMaterials = pricing
-    ? pricing.materials.reduce((sum, item) => sum + item.qty * item.unitPrice, 0)
-    : 0;
-  const grandTotal = pricing ? totalMaterials + pricing.labourCost : 0;
-
-  const details = service ? serviceDetails[service.title] : null;
-
-  // Close on overlay click or Escape key
   useEffect(() => {
     if (!service) return;
     const handleKey = (e: KeyboardEvent) => {
@@ -286,7 +275,24 @@ export default function ServiceModal({ service, onClose, onGetQuote }: ServiceMo
     };
   }, [service, onClose]);
 
-  if (!service || !pricing) return null;
+  if (!service) return null;
+
+  const details = serviceDetails[service.title];
+
+  // Try to find the service in the database data first
+  const dbServiceMatch = dbServices?.find((s: any) => s.name === service.title);
+  const pricing = dbServiceMatch 
+    ? {
+        labourCost: dbServiceMatch.labourCost,
+        labourDescription: dbServiceMatch.labourDescription,
+        materials: dbServiceMatch.materials || []
+      }
+    : servicePricingDB[service.title] || defaultPricing;
+
+  const totalMaterials = pricing
+    ? pricing.materials.reduce((sum: number, item: any) => sum + item.qty * item.unitPrice, 0)
+    : 0;
+  const grandTotal = pricing ? totalMaterials + pricing.labourCost : 0;
 
   return (
     <>

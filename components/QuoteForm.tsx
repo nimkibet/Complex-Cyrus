@@ -120,12 +120,12 @@ export default function QuoteForm() {
                   htmlFor="form-name"
                   className="block text-sm font-bold text-blue-900 mb-2"
                 >
-                  Full Name <span className="text-red-500">*</span>
+                  Name / Company <span className="text-red-500">*</span>
                 </label>
                 <input
                   id="form-name"
                   type="text"
-                  placeholder="John Doe"
+                  placeholder="e.g. Complex Cyrus"
                   className={`w-full px-4 py-3 rounded-xl border-2 text-gray-800 placeholder-gray-400 bg-gray-50 focus:bg-white focus:outline-none transition-colors ${
                     errors.name
                       ? "border-red-400 focus:border-red-500"

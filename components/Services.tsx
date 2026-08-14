@@ -252,7 +252,7 @@ const categoryColors: Record<string, string> = {
   Safety: "bg-teal-100 text-teal-700",
 };
 
-export default function Services() {
+export default function Services({ dbServices }: { dbServices?: any[] }) {
   const [selectedService, setSelectedService] = useState<ServiceItem | null>(null);
 
   return (
@@ -344,6 +344,7 @@ export default function Services() {
 
       <ServiceModal
         service={selectedService}
+        dbServices={dbServices}
         onClose={() => setSelectedService(null)}
         onGetQuote={(serviceName) => {
           // Find the select element in the quote form and update it

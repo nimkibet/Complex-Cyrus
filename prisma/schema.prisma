@@ -40,3 +40,9 @@ model ServiceMaterial {
   unit        String
   unitPrice   Float
 }
+
+model AdminUser {
+  id       String @id @default(cuid())
+  email    String @unique
+  password String
+}

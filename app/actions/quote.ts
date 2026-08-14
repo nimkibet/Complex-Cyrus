@@ -5,7 +5,7 @@ const { PrismaClient } = require("@prisma/client");
 import { Resend } from "resend";
 import fs from "fs";
 import path from "path";
-import { getPricingForService, type LineItem } from "@/lib/pricing";
+import { getPricingForService, defaultPricing, type LineItem, type ServicePricing } from "@/lib/pricing";
 
 type PrismaClientType = InstanceType<typeof PrismaClient>;
 const globalForPrisma = global as unknown as { prisma: PrismaClientType };
@@ -23,10 +23,11 @@ export interface QuoteData {
   message: string;
 }
 
+
+
 // ─── Branded HTML Template ──────────────────────────────────────────────────
 
-function generateQuoteHTML(data: QuoteData, quoteNumber: string): string {
-  const pricing = getPricingForService(data.service);
+function generateQuoteHTML(data: QuoteData, quoteNumber: string, pricing: ServicePricing): string {
   const materials: LineItem[] = pricing.materials;
 
   // Calculate totals
@@ -425,8 +426,7 @@ function generateQuoteHTML(data: QuoteData, quoteNumber: string): string {
 
 // ─── PDF Generation using Puppeteer ────────────────────────────────────────
 
-async function generateQuotePDF(data: QuoteData, quoteNumber: string): Promise<Buffer> {
-  // Dynamic import so it only loads in server context
+async function generateQuotePDF(data: QuoteData, quoteNumber: string, pricing: ServicePricing): Promise<Buffer> {
   const puppeteer = await import("puppeteer-core");
   const chromium = await import("@sparticuz/chromium");
 
@@ -440,7 +440,7 @@ async function generateQuotePDF(data: QuoteData, quoteNumber: string): Promise<B
 
   try {
     const page = await browser.newPage();
-    const html = generateQuoteHTML(data, quoteNumber);
+    const html = generateQuoteHTML(data, quoteNumber, pricing);
     await page.setContent(html, { waitUntil: "domcontentloaded" });
 
     const pdf = await page.pdf({
@@ -473,8 +473,25 @@ export async function submitQuoteAction(data: QuoteData) {
 
     const quoteNumber = `CCE/${new Date().getFullYear()}/${quote.id.slice(-6).toUpperCase()}`;
 
-    // 2. Generate branded PDF
-    const pdfBuffer = await generateQuotePDF(data, quoteNumber);
+    // 2. Fetch latest pricing from DB
+    const dbService = await prisma.service.findFirst({
+      where: { name: data.service },
+      include: { materials: { orderBy: { description: 'asc' } } }
+    });
+    
+    let pricing: ServicePricing;
+    if (dbService) {
+      pricing = {
+        labourCost: dbService.labourCost,
+        labourDescription: dbService.labourDescription,
+        materials: dbService.materials
+      };
+    } else {
+      pricing = defaultPricing;
+    }
+
+    // 3. Generate branded PDF
+    const pdfBuffer = await generateQuotePDF(data, quoteNumber, pricing);
 
     const adminEmail = process.env.ADMIN_EMAIL || "admin@complexcyrus.com";
     const fromEmail = process.env.RESEND_FROM_EMAIL || "quotes@seek-on.app";

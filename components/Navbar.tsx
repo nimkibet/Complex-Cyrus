@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Zap, Phone, ChevronDown, Menu, X } from "lucide-react";
+import { Zap, Phone, ChevronDown, Menu, X, User } from "lucide-react";
 import Link from "next/link";
 
 const navLinks = [
@@ -83,6 +83,20 @@ export default function Navbar() {
               <Phone className="w-4 h-4" />
               Call Now
             </a>
+            
+            {/* Hidden-in-plain-sight Admin Login */}
+            <Link
+              href="/admin/login"
+              className={`p-2 rounded-full transition-all duration-200 ${
+                scrolled
+                  ? "text-gray-400 hover:text-blue-800 hover:bg-blue-50"
+                  : "text-white/60 hover:text-white hover:bg-white/10"
+              }`}
+              title="User Portal"
+            >
+              <User className="w-5 h-5" />
+            </Link>
+
             <button
               onClick={() => setMenuOpen(!menuOpen)}
               className={`lg:hidden p-2 rounded-lg transition-colors ${

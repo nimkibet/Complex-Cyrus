@@ -9,14 +9,20 @@ import QuoteForm from "@/components/QuoteForm";
 import ContactInfo from "@/components/ContactInfo";
 import Footer from "@/components/Footer";
 
-export default function Home() {
+import prisma from "@/lib/prisma";
+
+export default async function Home() {
+  const dbServices = await prisma.service.findMany({
+    include: { materials: true }
+  });
+
   return (
     <>
       <Navbar />
       <main>
         <Hero />
         <About />
-        <Services />
+        <Services dbServices={dbServices} />
         <ProjectsGallery />
         <WhyChooseUs />
         <Testimonials />

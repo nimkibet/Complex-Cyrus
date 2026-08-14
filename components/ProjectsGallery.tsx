@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Home, Building2, Sun, Shield, Image, ChevronRight } from "lucide-react";
+import ProjectModal from "./ProjectModal";
 
 const categories = [
   { id: "all", label: "All Projects", icon: Image },
@@ -160,11 +161,11 @@ const projects: Project[] = [
 
 export default function ProjectsGallery() {
   const [activeCategory, setActiveCategory] = useState("all");
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
 
-  const filtered =
-    activeCategory === "all"
-      ? projects
-      : projects.filter((p) => p.category === activeCategory);
+  const filteredProjects = projects.filter(
+    (p) => activeCategory === "all" || p.category === activeCategory
+  );
 
   return (
     <section id="projects" className="py-20 lg:py-28 bg-blue-50 relative overflow-hidden">
@@ -212,11 +213,12 @@ export default function ProjectsGallery() {
 
         {/* Masonry Grid */}
         <div className="masonry-grid">
-          {filtered.map((project) => {
+          {filteredProjects.map((project) => {
             const Icon = project.icon;
             return (
               <div
                 key={project.id}
+                onClick={() => setSelectedProject(project)}
                 className={`masonry-item hover-lift rounded-2xl overflow-hidden group cursor-pointer`}
               >
                 {/* Project Image */}
@@ -280,6 +282,10 @@ export default function ProjectsGallery() {
           </a>
         </div>
       </div>
+      <ProjectModal
+        project={selectedProject}
+        onClose={() => setSelectedProject(null)}
+      />
     </section>
   );
 }
