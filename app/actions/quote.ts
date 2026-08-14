@@ -5,6 +5,7 @@ const { PrismaClient } = require("@prisma/client");
 import { Resend } from "resend";
 import fs from "fs";
 import path from "path";
+import { getPricingForService, type LineItem } from "@/lib/pricing";
 
 type PrismaClientType = InstanceType<typeof PrismaClient>;
 const globalForPrisma = global as unknown as { prisma: PrismaClientType };
@@ -25,6 +26,29 @@ export interface QuoteData {
 // ─── Branded HTML Template ──────────────────────────────────────────────────
 
 function generateQuoteHTML(data: QuoteData, quoteNumber: string): string {
+  const pricing = getPricingForService(data.service);
+  const materials: LineItem[] = pricing.materials;
+
+  // Calculate totals
+  const totalMaterials = materials.reduce((sum, item) => sum + item.qty * item.unitPrice, 0);
+  const totalLabour = pricing.labourCost;
+  const grandTotal = totalMaterials + totalLabour;
+
+  // Number to words (KSH)
+  function numberToWords(n: number): string {
+    if (n === 0) return "Zero";
+    const ones = ["","One","Two","Three","Four","Five","Six","Seven","Eight","Nine",
+      "Ten","Eleven","Twelve","Thirteen","Fourteen","Fifteen","Sixteen","Seventeen","Eighteen","Nineteen"];
+    const tens = ["","","Twenty","Thirty","Forty","Fifty","Sixty","Seventy","Eighty","Ninety"];
+    const convert = (num: number): string => {
+      if (num < 20) return ones[num];
+      if (num < 100) return tens[Math.floor(num / 10)] + (num % 10 ? " " + ones[num % 10] : "");
+      if (num < 1000) return ones[Math.floor(num / 100)] + " Hundred" + (num % 100 ? " " + convert(num % 100) : "");
+      if (num < 1000000) return convert(Math.floor(num / 1000)) + " Thousand" + (num % 1000 ? " " + convert(num % 1000) : "");
+      return convert(Math.floor(num / 1000000)) + " Million" + (num % 1000000 ? " " + convert(num % 1000000) : "");
+    };
+    return "Kenya Shillings " + convert(Math.round(n)) + " Only";
+  }
   const today = new Date();
   const validUntil = new Date(today);
   validUntil.setDate(today.getDate() + 30);
@@ -245,13 +269,8 @@ function generateQuoteHTML(data: QuoteData, quoteNumber: string): string {
     <div class="info-row"><span class="info-label">LOCATION:</span><span class="info-value">${data.location}</span></div>
     ${data.message ? `<div class="info-row"><span class="info-label">DETAILS:</span><span class="info-value">${data.message}</span></div>` : ""}
 
-    <!-- Note banner -->
-    <div class="note-banner" style="margin-top:14px">
-      <strong>PRELIMINARY QUOTATION NOTICE:</strong> This document is a preliminary quotation request summary for the service indicated above.
-      Our engineering team will review your full requirements and contact you within <strong>24 hours</strong> with a detailed Bill of Quantities (BOQ), unit prices, and final cost breakdown.
-    </div>
-
-    <!-- Items table placeholder with service -->
+    <!-- MATERIALS table -->
+    <div style="background:#1a2e5a;color:#fff;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;padding:7px 14px;margin-bottom:0">MATERIALS</div>
     <table>
       <thead>
         <tr>
@@ -259,51 +278,85 @@ function generateQuoteHTML(data: QuoteData, quoteNumber: string): string {
           <th>Description</th>
           <th class="center" style="width:60px">Qty</th>
           <th class="center" style="width:55px">Unit</th>
-          <th class="right" style="width:100px">Unit Price (KSH)</th>
-          <th class="right" style="width:100px">Amount (KSH)</th>
+          <th class="right" style="width:105px">Unit Price (KSH)</th>
+          <th class="right" style="width:105px">Amount (KSH)</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${materials.map((item, i) => {
+          const amount = item.qty * item.unitPrice;
+          return `<tr>
+            <td class="center"><span class="row-number">${i + 1}</span></td>
+            <td>${item.description}</td>
+            <td class="center">${item.qty} ${item.unit}</td>
+            <td class="center">${item.unit}</td>
+            <td class="right">${item.unitPrice.toLocaleString()}</td>
+            <td class="right">${amount.toLocaleString()}</td>
+          </tr>`;
+        }).join("")}
+      </tbody>
+      <tfoot>
+        <tr class="total-row">
+          <td colspan="5" style="text-align:right;font-weight:700">TOTAL MATERIALS COST</td>
+          <td style="text-align:right;font-weight:700">KSH ${totalMaterials.toLocaleString()}</td>
+        </tr>
+      </tfoot>
+    </table>
+
+    <!-- LABOUR table -->
+    <div style="background:#1a2e5a;color:#fff;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;padding:7px 14px;margin-bottom:0">LABOUR COST</div>
+    <table>
+      <thead>
+        <tr>
+          <th style="width:36px">No.</th>
+          <th>Description</th>
+          <th class="center" style="width:60px">Qty</th>
+          <th class="center" style="width:55px">Unit</th>
+          <th class="right" style="width:105px">Rate (KSH)</th>
+          <th class="right" style="width:105px">Total (KSH)</th>
         </tr>
       </thead>
       <tbody>
         <tr>
           <td class="center"><span class="row-number">1</span></td>
-          <td><strong>${data.service}</strong><br/><span style="color:#666;font-size:10px">${data.message || "As per client requirements and site assessment"}</span></td>
+          <td>${pricing.labourDescription}</td>
           <td class="center">1</td>
           <td class="center">Job</td>
-          <td class="right" style="color:#aaa;font-style:italic">TBD</td>
-          <td class="right" style="color:#aaa;font-style:italic">TBD</td>
-        </tr>
-        <tr>
-          <td class="center"><span class="row-number">2</span></td>
-          <td>Labour & Installation</td>
-          <td class="center">1</td>
-          <td class="center">Job</td>
-          <td class="right" style="color:#aaa;font-style:italic">TBD</td>
-          <td class="right" style="color:#aaa;font-style:italic">TBD</td>
-        </tr>
-        <tr>
-          <td class="center"><span class="row-number">3</span></td>
-          <td>Testing & Commissioning</td>
-          <td class="center">1</td>
-          <td class="center">Job</td>
-          <td class="right" style="color:#aaa;font-style:italic">TBD</td>
-          <td class="right" style="color:#aaa;font-style:italic">TBD</td>
+          <td class="right">${totalLabour.toLocaleString()}</td>
+          <td class="right">${totalLabour.toLocaleString()}</td>
         </tr>
       </tbody>
       <tfoot>
         <tr class="total-row">
-          <td colspan="5" style="text-align:right">TOTAL MATERIALS COST</td>
-          <td style="text-align:right">To be advised</td>
-        </tr>
-        <tr class="total-row">
-          <td colspan="5" style="text-align:right">LABOUR COST</td>
-          <td style="text-align:right">To be advised</td>
-        </tr>
-        <tr class="grand-total-row">
-          <td colspan="5" style="text-align:right">GRAND TOTAL (KSH)</td>
-          <td style="text-align:right">TBD</td>
+          <td colspan="5" style="text-align:right;font-weight:700">TOTAL LABOUR COST</td>
+          <td style="text-align:right;font-weight:700">KSH ${totalLabour.toLocaleString()}</td>
         </tr>
       </tfoot>
     </table>
+
+    <!-- Summary totals + Amount in words -->
+    <div style="display:flex;gap:24px;margin-bottom:16px;align-items:flex-start">
+      <div style="flex:1">
+        <div style="color:#E8600A;font-weight:700;font-size:10px;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">AMOUNT IN WORDS:</div>
+        <div style="font-style:italic;color:#333;font-size:10px;border-bottom:1px solid #ddd;padding-bottom:6px">${numberToWords(grandTotal)}</div>
+      </div>
+      <div style="min-width:260px">
+        <table style="margin-bottom:0">
+          <tr class="total-row">
+            <td style="font-weight:700">TOTAL MATERIALS COST</td>
+            <td style="text-align:right">KSH ${totalMaterials.toLocaleString()}</td>
+          </tr>
+          <tr class="total-row">
+            <td style="font-weight:700">TOTAL LABOUR COST</td>
+            <td style="text-align:right">KSH ${totalLabour.toLocaleString()}</td>
+          </tr>
+          <tr class="grand-total-row">
+            <td style="font-weight:900">GRAND TOTAL (KSH)</td>
+            <td style="text-align:right;font-weight:900">KSH ${grandTotal.toLocaleString()}</td>
+          </tr>
+        </table>
+      </div>
+    </div>
 
     <!-- Bottom section: terms + signatures -->
     <div class="bottom-section">
