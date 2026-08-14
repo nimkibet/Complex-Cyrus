@@ -168,46 +168,74 @@ async function generateQuotePDF(data: QuoteData, quoteNumber: string, pricing: S
       doc.fillColor(orange).text(`KSH ${grandTotal.toLocaleString()}`, 420, y + 7, { width: 130, align: "center" });
       y += 35;
 
-      // ─── Terms & Footer ───
-      if (y > 680) { doc.addPage(); y = 50; }
-      
-      doc.fontSize(8).font("Helvetica-Bold").fillColor(orange).text("TERMS & CONDITIONS", 40, y);
-      doc.font("Helvetica").fillColor(blue);
-      doc.text("• This quotation is valid for 30 days from the date above.", 40, y + 15);
-      doc.text("• Prices are in Kenya Shillings and inclusive of all costs except VAT if applicable.", 40, y + 25);
-      doc.text("• Payment terms to be agreed upon before commencement of work.", 40, y + 45);
-      doc.text("• We thank you for the opportunity to submit this quotation and look forward to working with you.", 40, y + 65, { width: 250 });
+      // ─── Footer Layout (3 columns) ───
+      if (y > 500) { doc.addPage(); y = 50; }
+      else { y += 40; }
 
-      // ─── Signature ───
+      // Column 1: Prepared By
+      doc.fontSize(9).font("Helvetica-Bold").fillColor(blue).text("Prepared By:", 40, y);
+      
       const signatureFont = path.join(process.cwd(), "public", "fonts", "GreatVibes-Regular.ttf");
       if (fs.existsSync(signatureFont)) {
-        doc.font(signatureFont).fontSize(28).fillColor(blue).text("Cyrus Maina", 310, y + 20);
+        doc.font(signatureFont).fontSize(28).fillColor(blue).text("Cyrus Maina", 40, y + 10);
       } else {
-        doc.font("Helvetica-Oblique").fontSize(18).fillColor(blue).text("Cyrus Maina", 310, y + 30);
+        doc.font("Helvetica-Oblique").fontSize(18).fillColor(blue).text("Cyrus Maina", 40, y + 20);
       }
+      doc.moveTo(40, y + 38).lineTo(160, y + 38).lineWidth(0.5).strokeColor(blue).stroke();
       
-      // Signature underline
-      doc.moveTo(310, y + 48).lineTo(430, y + 48).strokeColor(blue).lineWidth(0.5).stroke();
+      doc.font("Helvetica-Bold").fontSize(8).fillColor(orange).text("Engineer Cyrus Maina Wachira", 40, y + 45);
+      doc.font("Helvetica").fillColor("#333").text("Electrical Wiring Expert", 40, y + 55);
+      doc.font("Helvetica-Bold").fillColor(blue).text("Proprietor", 40, y + 65);
 
-      doc.font("Helvetica-Bold").fontSize(8).fillColor(orange).text("Engineer Cyrus Maina Wachira", 310, y + 55);
-      doc.font("Helvetica").fillColor(blue).text("Electrical Wiring Expert\nProprietor", 310, y + 65);
+      // Payment Notice Box
+      doc.roundedRect(40, y + 80, 160, 45, 4).lineWidth(1).strokeColor(orange).stroke();
+      doc.font("Helvetica-Bold").fontSize(8).fillColor(orange).text("PAYMENT NOTICE", 45, y + 85);
+      doc.font("Helvetica").fontSize(7).fillColor("#333").text("Payments can be made via Bank Transfer or M-Pesa.", 45, y + 97, { width: 150 });
+      doc.font("Helvetica-Bold").fontSize(8).fillColor("#000").text("Thank you for your business!", 45, y + 112);
 
-      // ─── Circular Stamp ───
-      const cx = 500;
-      const cy = y + 45;
-      
-      doc.circle(cx, cy, 35).lineWidth(2).strokeColor(blue).stroke();
-      doc.circle(cx, cy, 32).lineWidth(1).strokeColor(blue).stroke();
-      
-      doc.fontSize(6).font("Helvetica-Bold").fillColor(blue);
-      doc.text("COMPLEX CYRUS", cx - 25, cy - 15, { width: 50, align: "center" });
-      doc.text("ELECTRICAL", cx - 25, cy - 5, { width: 50, align: "center" });
-      doc.text("SOLUTION", cx - 25, cy + 3, { width: 50, align: "center" });
-      doc.fontSize(7).fillColor(orange).text("OFFICIAL SEAL", cx - 30, cy + 15, { width: 60, align: "center" });
+      // Column 2: Checked & Approved By
+      doc.fontSize(9).font("Helvetica-Bold").fillColor(blue).text("Checked & Approved By:", 220, y);
+      doc.moveTo(220, y + 25).lineTo(360, y + 25).strokeColor(blue).stroke();
+      doc.text("Name:", 220, y + 40);
+      doc.moveTo(250, y + 48).lineTo(360, y + 48).stroke();
 
-      // ─── Bottom Orange Bar ───
+      // Circular Stamp
+      const cx = 290;
+      const cy = y + 90;
+      doc.circle(cx, cy, 32).lineWidth(2).strokeColor(blue).stroke();
+      doc.circle(cx, cy, 29).lineWidth(1).strokeColor(blue).stroke();
+      // Draw a small M in the middle
+      doc.fontSize(24).font("Helvetica-Bold").fillColor(blue).text("M", cx - 10, cy - 12);
+      // Small text around
+      doc.fontSize(4).text("COMPLEX CYRUS", cx - 18, cy - 20, { width: 36, align: "center" });
+      doc.text("ELECTRICAL SOLUTION", cx - 22, cy + 12, { width: 44, align: "center" });
+      doc.fontSize(7).fillColor(blue).text("OFFICIAL SEAL", cx - 35, cy + 36, { width: 70, align: "center" });
+
+      // Column 3: Customer's Signature
+      doc.fontSize(9).font("Helvetica-Bold").fillColor(blue).text("Customer's Signature:", 400, y);
+      doc.moveTo(400, y + 25).lineTo(540, y + 25).strokeColor(blue).stroke();
+      doc.text("Date:    ____ / ____ / 20____", 400, y + 40);
+
+      // Company Stamp Box
+      doc.roundedRect(400, y + 70, 140, 45, 2).lineWidth(1).strokeColor(blue).stroke();
+      doc.fontSize(8).fillColor(blue).text("COMPLEX CYRUS\nELECTRICAL SOLUTION\nP.O. BOX 65-01000, THIKA\nKIAMBU, KENYA", 405, y + 75, { align: "center", width: 130 });
+      doc.fontSize(7).fillColor(orange).text("COMPANY STAMP", 405, y + 120, { align: "center", width: 130 });
+
+      // ─── Bottom Banners ───
+      // Dark Blue Banner
+      doc.rect(0, 740, 595, 60).fill(blue);
+      doc.fontSize(8).font("Helvetica-Bold").fillColor("#fff");
+      doc.text("RESIDENTIAL\nWIRING", 80, 755);
+      doc.moveTo(150, 755).lineTo(150, 780).lineWidth(1).strokeColor("#fff").stroke();
+      doc.text("COMMERCIAL\nWIRING", 170, 755);
+      doc.moveTo(240, 755).lineTo(240, 780).stroke();
+      doc.text("INDUSTRIAL\nSOLUTIONS", 260, 755);
+      doc.moveTo(330, 755).lineTo(330, 780).stroke();
+      doc.text("RENEWABLE\nENERGY", 350, 755);
+
+      // Bottom Orange Bar ───
       doc.rect(0, 800, 595, 42).fill(orange);
-      doc.fontSize(10).font("Helvetica").fillColor("#fff");
+      doc.fontSize(10).font("Helvetica").fillColor(blue);
       doc.text("Proudly Serving Kenya", 40, 815);
       doc.text("Quality. Safety. Reliability.", 0, 815, { align: "center", width: 595 });
       doc.text("www.complexcyruselectrical.co.ke", 0, 815, { align: "right", width: 555 });
