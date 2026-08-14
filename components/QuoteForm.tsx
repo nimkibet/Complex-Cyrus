@@ -38,6 +38,7 @@ const services = [
 
 export default function QuoteForm() {
   const [submitted, setSubmitted] = useState(false);
+  const [quoteRef, setQuoteRef] = useState("");
 
   const {
     register,
@@ -50,11 +51,12 @@ export default function QuoteForm() {
     try {
       const result = await submitQuoteAction(data);
       if (result.success) {
+        setQuoteRef((result as { success: true; quoteNumber: string }).quoteNumber || "");
         setSubmitted(true);
         reset();
-        setTimeout(() => setSubmitted(false), 5000);
+        setTimeout(() => setSubmitted(false), 8000);
       } else {
-        alert("Request saved, but email failed. Please configure SMTP in .env file.");
+        alert("Something went wrong. Please try again or call us directly.");
       }
     } catch (error) {
       console.error(error);
@@ -96,12 +98,15 @@ export default function QuoteForm() {
         <div className="bg-white rounded-3xl shadow-2xl shadow-blue-900/10 border border-blue-100 p-8 lg:p-12">
           {/* Success Message */}
           {submitted && (
-            <div className="mb-8 flex items-center gap-3 bg-green-50 border border-green-200 rounded-xl p-4">
-              <CheckCircle className="w-6 h-6 text-green-500 flex-shrink-0" />
+            <div className="mb-8 flex items-start gap-3 bg-green-50 border border-green-200 rounded-xl p-5">
+              <CheckCircle className="w-6 h-6 text-green-500 flex-shrink-0 mt-0.5" />
               <div>
-                <p className="font-bold text-green-800">Request submitted successfully!</p>
-                <p className="text-green-700 text-sm">
-                  Our team will contact you shortly to discuss your project.
+                <p className="font-bold text-green-800 text-base">Quotation Request Submitted!</p>
+                {quoteRef && (
+                  <p className="text-green-700 text-sm mt-1">Reference: <strong className="font-mono">{quoteRef}</strong></p>
+                )}
+                <p className="text-green-700 text-sm mt-1">
+                  A branded PDF quotation has been sent to your email. Our team will follow up within 24 hours with full pricing.
                 </p>
               </div>
             </div>
