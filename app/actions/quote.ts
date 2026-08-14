@@ -206,15 +206,21 @@ async function generateQuotePDF(data: QuoteData, quoteNumber: string, pricing: S
       doc.text("Name:", 220, y + 40);
       doc.moveTo(250, y + 48).lineTo(360, y + 48).stroke();
 
-      // Circular Stamp (Perfect Vector Drawing)
+      // Circular Stamp
+      const sealPath = path.join(process.cwd(), "public", "round_seal.png");
       const cx = 290;
       const cy = y + 90;
-      doc.circle(cx, cy, 32).lineWidth(2).strokeColor(blue).stroke();
-      doc.circle(cx, cy, 29).lineWidth(1).strokeColor(blue).stroke();
-      doc.fontSize(24).font("Helvetica-Bold").fillColor(blue).text("M", cx - 10, cy - 12);
-      doc.fontSize(4).text("COMPLEX CYRUS", cx - 18, cy - 20, { width: 36, align: "center" });
-      doc.text("ELECTRICAL SOLUTION", cx - 22, cy + 12, { width: 44, align: "center" });
-      doc.fontSize(7).fillColor(blue).text("OFFICIAL SEAL", cx - 35, cy + 36, { width: 70, align: "center" });
+      if (fs.existsSync(sealPath)) {
+        // Center the image around cx, cy
+        doc.image(sealPath, cx - 40, cy - 40, { width: 80 });
+      } else {
+        doc.circle(cx, cy, 32).lineWidth(2).strokeColor(blue).stroke();
+        doc.circle(cx, cy, 29).lineWidth(1).strokeColor(blue).stroke();
+        doc.fontSize(24).font("Helvetica-Bold").fillColor(blue).text("M", cx - 10, cy - 12);
+        doc.fontSize(4).text("COMPLEX CYRUS", cx - 18, cy - 20, { width: 36, align: "center" });
+        doc.text("ELECTRICAL SOLUTION", cx - 22, cy + 12, { width: 44, align: "center" });
+        doc.fontSize(7).fillColor(blue).text("OFFICIAL SEAL", cx - 35, cy + 36, { width: 70, align: "center" });
+      }
 
       // Column 3: Customer's Signature
       doc.fontSize(9).font("Helvetica-Bold").fillColor(blue).text("Customer's Signature:", 400, y);
@@ -222,9 +228,14 @@ async function generateQuotePDF(data: QuoteData, quoteNumber: string, pricing: S
       doc.text("Date:    ____ / ____ / 20____", 400, y + 40);
 
       // Company Stamp Box
-      doc.roundedRect(400, y + 70, 140, 45, 2).lineWidth(1).strokeColor(blue).stroke();
-      doc.fontSize(8).fillColor(blue).text("COMPLEX CYRUS\nELECTRICAL SOLUTION\nP.O. BOX 65-01000, THIKA\nKIAMBU, KENYA", 405, y + 75, { align: "center", width: 130 });
-      doc.fontSize(7).fillColor(orange).text("COMPANY STAMP", 405, y + 120, { align: "center", width: 130 });
+      const stampPath = path.join(process.cwd(), "public", "square_stamp.png");
+      if (fs.existsSync(stampPath)) {
+        doc.image(stampPath, 400, y + 65, { width: 140 });
+      } else {
+        doc.roundedRect(400, y + 70, 140, 45, 2).lineWidth(1).strokeColor(blue).stroke();
+        doc.fontSize(8).fillColor(blue).text("COMPLEX CYRUS\nELECTRICAL SOLUTION\nP.O. BOX 65-01000, THIKA\nKIAMBU, KENYA", 405, y + 75, { align: "center", width: 130 });
+        doc.fontSize(7).fillColor(orange).text("COMPANY STAMP", 405, y + 120, { align: "center", width: 130 });
+      }
 
       // ─── Bottom Banners ───
       // Dark Blue Banner
