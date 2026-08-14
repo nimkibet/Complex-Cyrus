@@ -51,15 +51,15 @@ function ServiceCard({ service, isExpanded, onToggle }: { service: Service; isEx
         onClick={onToggle}
         className="px-6 py-5 flex items-center justify-between cursor-pointer hover:bg-gray-50 transition-colors"
       >
-        <div className="flex items-center gap-4">
-          <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-black">
+        <div className="flex items-center gap-3 sm:gap-4">
+          <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-black shrink-0">
             {service.name.charAt(0)}
           </div>
           <div>
-            <h2 className="text-lg font-bold text-gray-900">{service.name}</h2>
-            <div className="flex items-center gap-2 mt-1">
-              <span className="text-xs font-semibold text-blue-700 bg-blue-100 px-2 py-0.5 rounded-full">{service.category}</span>
-              <span className="text-sm font-medium text-gray-500">Estimate: KSH {grandTotal.toLocaleString()}</span>
+            <h2 className="text-base sm:text-lg font-bold text-gray-900 leading-tight">{service.name}</h2>
+            <div className="flex flex-wrap items-center gap-2 mt-1">
+              <span className="text-[10px] sm:text-xs font-semibold text-blue-700 bg-blue-100 px-2 py-0.5 rounded-full">{service.category}</span>
+              <span className="text-xs sm:text-sm font-medium text-gray-500">Estimate: KSH {grandTotal.toLocaleString()}</span>
             </div>
           </div>
         </div>
@@ -101,7 +101,7 @@ function ServiceCard({ service, isExpanded, onToggle }: { service: Service; isEx
                   </h3>
                 </div>
                 <div className="overflow-x-auto">
-                  <table className="w-full text-sm text-left">
+                  <table className="w-full text-sm text-left min-w-[500px]">
                     <thead className="bg-white border-b border-gray-100 text-xs uppercase text-gray-500 font-bold">
                       <tr>
                         <th className="px-4 py-3 w-10 text-center">#</th>
@@ -176,8 +176,8 @@ function EditablePriceField({ label, initialValue, onSave }: { label: string, in
     return (
       <div className="group relative">
         <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">{label}</label>
-        <div className="flex items-center gap-3">
-          <span className="text-3xl font-black text-gray-900 tracking-tight">{parseFloat(value).toLocaleString()}</span>
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+          <span className="text-2xl sm:text-3xl font-black text-gray-900 tracking-tight">{parseFloat(value).toLocaleString()}</span>
           <button 
             onClick={() => setIsEditing(true)}
             className="opacity-0 group-hover:opacity-100 p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-all"

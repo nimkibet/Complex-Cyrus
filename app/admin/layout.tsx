@@ -18,41 +18,43 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       {isAuthenticated && (
         <header className="bg-blue-950 text-white shadow-xl sticky top-0 z-40">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex justify-between items-center h-16">
-              <div className="flex items-center gap-3">
-                <Zap className="w-6 h-6 text-yellow-400 fill-yellow-400" />
-                <span className="font-black text-xl tracking-tight hidden sm:block">
+            <div className="flex justify-between items-center min-h-[4rem] py-2">
+              <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+                <Zap className="w-5 h-5 sm:w-6 sm:h-6 text-yellow-400 fill-yellow-400" />
+                <span className="font-black text-sm sm:text-xl tracking-tight hidden sm:block">
                   COMPLEX CYRUS <span className="text-blue-300">ADMIN</span>
                 </span>
               </div>
-              <nav className="flex items-center gap-4 sm:gap-6">
+              <nav className="flex flex-wrap items-center justify-end gap-3 sm:gap-6">
                 <Link
                   href="/admin/pricing"
-                  className="text-sm font-bold text-white hover:text-yellow-400 flex items-center gap-2 transition-colors"
+                  className="text-xs sm:text-sm font-bold text-white hover:text-yellow-400 flex items-center gap-1.5 sm:gap-2 transition-colors"
                 >
-                  <LayoutDashboard className="w-4 h-4" /> Pricing Manager
+                  <LayoutDashboard className="w-4 h-4 shrink-0" /> <span className="hidden sm:inline">Pricing Manager</span>
+                  <span className="sm:hidden">Pricing</span>
                 </Link>
 
                 <Link
                   href="/admin/settings"
-                  className="text-sm font-bold text-white hover:text-yellow-400 flex items-center gap-2 transition-colors"
+                  className="text-xs sm:text-sm font-bold text-white hover:text-yellow-400 flex items-center gap-1.5 sm:gap-2 transition-colors"
                 >
-                  <Settings className="w-4 h-4" /> Settings
+                  <Settings className="w-4 h-4 shrink-0" /> <span className="hidden sm:inline">Settings</span>
                 </Link>
                 
-                <div className="w-px h-6 bg-blue-800 hidden sm:block"></div>
+                <div className="w-px h-5 sm:h-6 bg-blue-800 hidden sm:block"></div>
                 
                 <form action={logoutAction}>
-                  <button className="text-sm font-bold text-red-300 hover:text-red-400 flex items-center gap-2 transition-colors">
-                    <LogOut className="w-4 h-4" /> Logout
+                  <button className="text-xs sm:text-sm font-bold text-red-300 hover:text-red-400 flex items-center gap-1.5 sm:gap-2 transition-colors">
+                    <LogOut className="w-4 h-4 shrink-0" /> <span className="hidden sm:inline">Logout</span>
                   </button>
                 </form>
 
                 <Link
                   href="/"
-                  className="text-sm font-bold text-blue-300 hover:text-white transition-colors ml-2"
+                  className="text-xs sm:text-sm font-bold text-blue-300 hover:text-white transition-colors ml-1 sm:ml-2"
                 >
-                  &larr; Back to Website
+                  <span className="hidden sm:inline">&larr; Back to Website</span>
+                  <span className="sm:hidden">&larr; Web</span>
                 </Link>
               </nav>
             </div>
