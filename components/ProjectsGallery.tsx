@@ -20,6 +20,7 @@ interface Project {
   gradient: string;
   icon: React.ComponentType<{ className?: string }>;
   tags: string[];
+  image?: string;
 }
 
 const projects: Project[] = [
@@ -32,6 +33,7 @@ const projects: Project[] = [
     gradient: "from-blue-800 to-blue-600",
     icon: Home,
     tags: ["Smart Home", "LED Lighting", "DB Upgrade"],
+    image: "/services/1_DOMESTIC_ELECTRICAL_INSTALLATION.webp",
   },
   {
     id: 2,
@@ -42,6 +44,7 @@ const projects: Project[] = [
     gradient: "from-indigo-800 to-purple-700",
     icon: Building2,
     tags: ["Structured Cabling", "Lighting"],
+    image: "/services/2_COMMERCIAL_ELECTRICAL_INSTALLATION.webp",
   },
   {
     id: 3,
@@ -52,6 +55,7 @@ const projects: Project[] = [
     gradient: "from-yellow-600 to-orange-500",
     icon: Sun,
     tags: ["Grid-Tied", "Battery Backup"],
+    image: "/services/8_SOLAR_PV_INSTALLATION.webp",
   },
   {
     id: 4,
@@ -62,6 +66,7 @@ const projects: Project[] = [
     gradient: "from-red-800 to-red-600",
     icon: Shield,
     tags: ["Perimeter Security", "HD CCTV"],
+    image: "/services/12_ELECTRIC_FENCE_INSTALLATION.webp",
   },
   {
     id: 5,
@@ -72,6 +77,7 @@ const projects: Project[] = [
     gradient: "from-gray-800 to-gray-600",
     icon: Building2,
     tags: ["3-Phase Power", "Motor Control"],
+    image: "/services/3_INDUSTRIAL_ELECTRICAL_SYSTEMS.webp",
   },
   {
     id: 6,
@@ -82,6 +88,7 @@ const projects: Project[] = [
     gradient: "from-green-700 to-teal-600",
     icon: Sun,
     tags: ["Off-Grid", "25kW System"],
+    image: "/services/8_SOLAR_PV_INSTALLATION.webp",
   },
   {
     id: 7,
@@ -92,6 +99,7 @@ const projects: Project[] = [
     gradient: "from-blue-700 to-cyan-600",
     icon: Home,
     tags: ["30 Units", "KPLC Meters"],
+    image: "/services/17_ESTATE_ELECTRICAL_INFRASTRUCTURE.webp",
   },
   {
     id: 8,
@@ -102,6 +110,7 @@ const projects: Project[] = [
     gradient: "from-emerald-800 to-green-700",
     icon: Building2,
     tags: ["Medical Grade", "UPS", "Generator"],
+    image: "/services/2_COMMERCIAL_ELECTRICAL_INSTALLATION.webp",
   },
   {
     id: 9,
@@ -112,6 +121,7 @@ const projects: Project[] = [
     gradient: "from-slate-800 to-slate-600",
     icon: Shield,
     tags: ["200+ Cameras", "NVR System"],
+    image: "/services/11_CCTV_INSTALLATION.webp",
   },
   {
     id: 10,
@@ -122,6 +132,7 @@ const projects: Project[] = [
     gradient: "from-amber-600 to-yellow-500",
     icon: Sun,
     tags: ["15kW", "Free Energy"],
+    image: "/services/8_SOLAR_PV_INSTALLATION.webp",
   },
   {
     id: 11,
@@ -132,6 +143,7 @@ const projects: Project[] = [
     gradient: "from-blue-900 to-blue-700",
     icon: Home,
     tags: ["Home Automation", "CCTV"],
+    image: "/services/1_DOMESTIC_ELECTRICAL_INSTALLATION.webp",
   },
   {
     id: 12,
@@ -142,6 +154,7 @@ const projects: Project[] = [
     gradient: "from-zinc-700 to-zinc-500",
     icon: Building2,
     tags: ["LED Upgrade", "Energy Saving"],
+    image: "/services/5_LIGHTING_DESIGN_AND_INSTALLATION.webp",
   },
 ];
 
@@ -206,18 +219,19 @@ export default function ProjectsGallery() {
                 key={project.id}
                 className={`masonry-item hover-lift rounded-2xl overflow-hidden group cursor-pointer`}
               >
-                {/* Image Placeholder */}
+                {/* Project Image */}
                 <div
-                  className={`${project.height} bg-gradient-to-br ${project.gradient} relative flex items-end p-5`}
+                  className={`${project.height} relative flex items-end p-5 overflow-hidden bg-gray-100`}
                 >
-                  {/* Pattern overlay */}
-                  <div
-                    className="absolute inset-0 opacity-10"
-                    style={{
-                      backgroundImage:
-                        "radial-gradient(circle at 20% 20%, rgba(255,255,255,0.3) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(255,255,255,0.15) 0%, transparent 50%)",
-                    }}
+                  <img
+                    src={project.image}
+                    alt={project.title}
+                    loading="lazy"
+                    className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
                   />
+                  
+                  {/* Dark gradient for text readability */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-blue-900/90 via-blue-900/30 to-transparent opacity-80 group-hover:opacity-100 transition-opacity duration-300" />
 
                   {/* Icon */}
                   <div className="absolute top-4 right-4 w-10 h-10 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
