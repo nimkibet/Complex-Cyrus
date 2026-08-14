@@ -252,8 +252,38 @@ const categoryColors: Record<string, string> = {
   Safety: "bg-teal-100 text-teal-700",
 };
 
-export default function Services({ dbServices }: { dbServices?: any[] }) {
+export default function Services({ dbServices = [] }: { dbServices?: any[] }) {
   const [selectedService, setSelectedService] = useState<ServiceItem | null>(null);
+
+  // Helper to borrow beautiful images and icons for DB services
+  const getServiceAssets = (name: string) => {
+    const match = services.find(
+      (s) =>
+        s.title.toLowerCase().includes(name.toLowerCase()) ||
+        name.toLowerCase().includes(s.title.toLowerCase())
+    );
+    return match || {
+      icon: Zap,
+      image: "/services/1_DOMESTIC_ELECTRICAL_INSTALLATION.webp",
+      description: "Professional electrical services tailored to your needs.",
+      category: "General",
+    };
+  };
+
+  // If dbServices are available, use them as the source of truth. Otherwise, fallback to static list.
+  const displayServices = dbServices.length > 0 
+    ? dbServices.map(dbS => {
+        const assets = getServiceAssets(dbS.name);
+        return {
+          id: dbS.id,
+          title: dbS.name, // The exact DB name!
+          description: dbS.description || assets.description,
+          icon: assets.icon,
+          image: assets.image,
+          category: assets.category
+        };
+      })
+    : services;
 
   return (
     <section id="services" className="py-20 lg:py-28 bg-white relative overflow-hidden">
@@ -285,7 +315,7 @@ export default function Services({ dbServices }: { dbServices?: any[] }) {
 
         {/* Services Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {services.map((service, index) => {
+          {displayServices.map((service, index) => {
             return (
               <div
                 key={service.title}
