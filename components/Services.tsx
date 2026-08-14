@@ -351,6 +351,7 @@ export default function Services({ dbServices }: { dbServices?: any[] }) {
           const selectEl = document.querySelector('select[name="service"]') as HTMLSelectElement;
           if (selectEl) {
             selectEl.value = serviceName;
+            selectEl.dispatchEvent(new Event('change', { bubbles: true }));
           }
           // Scroll to form
           const quoteSection = document.getElementById("quote");

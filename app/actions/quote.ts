@@ -491,13 +491,19 @@ export async function submitQuoteAction(data: QuoteData) {
     }
 
     // 3. Generate branded PDF
-    const pdfBuffer = await generateQuotePDF(data, quoteNumber, pricing);
+    let pdfBuffer: Buffer | null = null;
+    try {
+      pdfBuffer = await generateQuotePDF(data, quoteNumber, pricing);
+    } catch (pdfError) {
+      console.error("PDF generation failed on Vercel, sending without attachment:", pdfError);
+    }
 
     const adminEmail = process.env.ADMIN_EMAIL || "admin@complexcyrus.com";
     const fromEmail = process.env.RESEND_FROM_EMAIL || "quotes@seek-on.app";
     const attachmentName = `Quotation-${quoteNumber.replace(/\//g, "-")}.pdf`;
+    const attachments = pdfBuffer ? [{ filename: attachmentName, content: pdfBuffer }] : [];
 
-    // 3. Send to Admin
+    // 4. Send to Admin
     await resend.emails.send({
       from: `Complex Cyrus System <${fromEmail}>`,
       to: adminEmail,
@@ -516,10 +522,10 @@ export async function submitQuoteAction(data: QuoteData) {
               <tr><td style="padding:6px 0;color:#666">Service:</td><td style="color:#E8600A;font-weight:700">${data.service}</td></tr>
               ${data.message ? `<tr><td style="padding:6px 0;color:#666;vertical-align:top">Details:</td><td>${data.message}</td></tr>` : ""}
             </table>
-            <p style="margin-top:16px;color:#888;font-size:12px">The branded quotation PDF is attached to this email.</p>
+            <p style="margin-top:16px;color:#888;font-size:12px">${pdfBuffer ? 'The branded quotation PDF is attached to this email.' : 'The quotation details have been saved to the database. (PDF attachment was skipped due to server limitations).'}</p>
           </div>
         </div>`,
-      attachments: [{ filename: attachmentName, content: pdfBuffer }],
+      attachments,
     });
 
     // 4. Send to Client
@@ -542,14 +548,14 @@ export async function submitQuoteAction(data: QuoteData) {
               <p style="margin:0;color:#1a2e5a;font-weight:700;font-size:13px">Quotation Reference: <span style="color:#E8600A">${quoteNumber}</span></p>
               <p style="margin:6px 0 0;color:#666;font-size:12px">Please use this reference number for any follow-up communication.</p>
             </div>
-            <p style="color:#444;line-height:1.7">We will reach out within <strong>24 hours</strong> with a detailed cost breakdown tailored to your project at <strong>${data.location}</strong>. A preliminary quotation PDF is attached for your records.</p>
+            <p style="color:#444;line-height:1.7">We will reach out within <strong>24 hours</strong> with a detailed cost breakdown tailored to your project at <strong>${data.location}</strong>. ${pdfBuffer ? 'A preliminary quotation PDF is attached for your records.' : 'Our engineers will prepare a full proposal shortly.'}</p>
             <p style="color:#444;line-height:1.7;margin-top:12px">For urgent inquiries, please call us directly at <strong style="color:#1a2e5a">+254 725 618 445</strong>.</p>
           </div>
           <div style="background:#E8600A;padding:16px 24px;text-align:center">
             <p style="color:#fff;margin:0;font-size:12px">Quality. Safety. Reliability. — Proudly Serving Kenya</p>
           </div>
         </div>`,
-      attachments: [{ filename: attachmentName, content: pdfBuffer }],
+      attachments,
     });
 
     return { success: true, quoteNumber };
