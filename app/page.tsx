@@ -14,9 +14,14 @@ import prisma from "@/lib/prisma";
 export const dynamic = 'force-dynamic';
 
 export default async function Home() {
-  const dbServices = await prisma.service.findMany({
-    include: { materials: true }
-  });
+  let dbServices: any[] = [];
+  try {
+    dbServices = await prisma.service.findMany({
+      include: { materials: true }
+    });
+  } catch (error) {
+    console.error("Database connection failed, falling back to static default services:", error);
+  }
 
   return (
     <>

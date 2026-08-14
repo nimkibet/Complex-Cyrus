@@ -238,9 +238,32 @@ export default function QuoteForm({ serviceNames = [] }: { serviceNames?: string
                   <option key={s} value={s}>
                     {s}
                   </option>
-                )) : (
-                  <option value="Other">Other</option>
-                )}
+                )) : [
+                  "Domestic Electrical Installation",
+                  "Commercial Electrical Installation",
+                  "Industrial Electrical Installation",
+                  "Distribution Board Installation",
+                  "Solar PV Installation",
+                  "Battery Backup Systems",
+                  "CCTV Installation",
+                  "Electric Fence Installation",
+                  "KPLC Meter Applications",
+                  "Generator Installation",
+                  "LED Lighting Solutions",
+                  "Structured Cabling & LAN",
+                  "Earthing & Lightning Protection",
+                  "Fire Alarm Systems",
+                  "Electrical Inspections & Testing",
+                  "Electrical Design & Drawings",
+                  "Smart Home Automation",
+                  "24/7 Emergency Electrical Services",
+                  "Electrical Maintenance & Repairs",
+                  "Other"
+                ].map((s) => (
+                  <option key={s} value={s}>
+                    {s}
+                  </option>
+                ))}
               </select>
               {errors.service && (
                 <p className="mt-1 text-xs text-red-500 flex items-center gap-1">
