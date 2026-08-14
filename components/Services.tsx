@@ -347,10 +347,19 @@ export default function Services({ dbServices }: { dbServices?: any[] }) {
         dbServices={dbServices}
         onClose={() => setSelectedService(null)}
         onGetQuote={(serviceName) => {
-          // Find the select element in the quote form and update it
           const selectEl = document.querySelector('select[name="service"]') as HTMLSelectElement;
           if (selectEl) {
-            selectEl.value = serviceName;
+            // Check if the exact service exists in the dropdown, otherwise fall back to first option or Other
+            const options = Array.from(selectEl.options).map(o => o.value);
+            const valueToSet = options.includes(serviceName) ? serviceName : (options.includes("Other") ? "Other" : options[1] || "");
+            
+            // React 16+ overrides the native value setter. We must bypass it to trigger hook-form.
+            const nativeInputValueSetter = Object.getOwnPropertyDescriptor(window.HTMLSelectElement.prototype, "value")?.set;
+            if (nativeInputValueSetter) {
+              nativeInputValueSetter.call(selectEl, valueToSet);
+            } else {
+              selectEl.value = valueToSet;
+            }
             selectEl.dispatchEvent(new Event('change', { bubbles: true }));
           }
           // Scroll to form
