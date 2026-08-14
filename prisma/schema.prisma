@@ -3,8 +3,9 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model QuoteRequest {
@@ -16,4 +17,26 @@ model QuoteRequest {
   service   String
   message   String?
   createdAt DateTime @default(now())
+}
+
+model Service {
+  id                String   @id @default(cuid())
+  name              String   @unique
+  category          String
+  description       String
+  labourCost        Float
+  labourDescription String
+  materials         ServiceMaterial[]
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+model ServiceMaterial {
+  id          String   @id @default(cuid())
+  serviceId   String
+  service     Service  @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  description String
+  qty         Float
+  unit        String
+  unitPrice   Float
 }
