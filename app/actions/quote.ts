@@ -175,18 +175,17 @@ async function generateQuotePDF(data: QuoteData, quoteNumber: string, pricing: S
       // Column 1: Prepared By
       doc.fontSize(9).font("Helvetica-Bold").fillColor(blue).text("Prepared By:", 40, y);
       
-      // Use a mathematical SVG path to draw a professional signature (a stylized "C" followed by continuous loops)
-      const sy = y + 15;
-      const sx = 45;
-      doc.path(`M ${sx + 15} ${sy + 5} C ${sx - 10} ${sy - 15}, ${sx - 20} ${sy + 15}, ${sx} ${sy + 25} C ${sx + 15} ${sy + 35}, ${sx + 35} ${sy + 20}, ${sx + 25} ${sy + 10}`).strokeColor(blue).lineWidth(1.5).stroke();
-      doc.path(`M ${sx + 25} ${sy + 10} Q ${sx + 40} ${sy - 10}, ${sx + 45} ${sy + 20} T ${sx + 65} ${sy} T ${sx + 85} ${sy + 20} T ${sx + 110} ${sy - 5} T ${sx + 130} ${sy + 15}`).stroke();
-      doc.path(`M ${sx} ${sy + 35} Q ${sx + 60} ${sy + 45}, ${sx + 140} ${sy + 25}`).stroke();
+      // Place the real signature image (white background is fine on white PDF)
+      const signImgPath = path.join(process.cwd(), "public", "sign.jpeg");
+      if (fs.existsSync(signImgPath)) {
+        doc.image(signImgPath, 38, y + 8, { width: 160, height: 35 });
+      }
       
-      doc.moveTo(40, y + 38).lineTo(160, y + 38).lineWidth(0.5).strokeColor(blue).stroke();
+      doc.moveTo(40, y + 45).lineTo(200, y + 45).lineWidth(0.5).strokeColor(blue).stroke();
       
-      doc.font("Helvetica-Bold").fontSize(8).fillColor(orange).text("Engineer Cyrus Maina Wachira", 40, y + 45);
-      doc.font("Helvetica").fillColor("#333").text("Electrical Wiring Expert", 40, y + 55);
-      doc.font("Helvetica-Bold").fillColor(blue).text("Proprietor", 40, y + 65);
+      doc.font("Helvetica-Bold").fontSize(8).fillColor(orange).text("Engineer Cyrus Maina Wachira", 40, y + 52);
+      doc.font("Helvetica").fillColor("#333").text("Electrical Wiring Expert", 40, y + 62);
+      doc.font("Helvetica-Bold").fillColor(blue).text("Proprietor", 40, y + 72);
 
       // Payment Notice Box
       doc.roundedRect(40, y + 80, 160, 45, 4).lineWidth(1).strokeColor(orange).stroke();
